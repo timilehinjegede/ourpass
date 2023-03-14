@@ -13,6 +13,8 @@ abstract class IAuthRepository {
   });
 
   Future saveUser(UserModel user);
+
+  Future<bool> isVerified(String? userId);
 }
 
 class AuthRepository implements IAuthRepository {
@@ -45,5 +47,10 @@ class AuthRepository implements IAuthRepository {
   @override
   Future saveUser(UserModel user) async {
     return authRemoteSource.saveUser(user);
+  }
+
+  @override
+  Future<bool> isVerified(String? userId) {
+    return authRemoteSource.isVerified(userId);
   }
 }

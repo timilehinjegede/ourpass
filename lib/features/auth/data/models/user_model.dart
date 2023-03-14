@@ -23,19 +23,29 @@ class UserModel {
         lastName: json['last_name'],
         email: json['email'],
         isVerified: json['is_verified'],
-        createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at']),
-        updatedAt: DateTime.fromMillisecondsSinceEpoch(json['updated_at']),
+        createdAt: json['created_at'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(
+                int.parse(
+                  json['created_at'].toString(),
+                ),
+              )
+            : null,
+        updatedAt: json['updated_at'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(
+                int.parse(
+                  json['updated_at'].toString(),
+                ),
+              )
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
-        'first_name': firstName,
-        'last_name': lastName,
-        'email': email,
-        'is_verified': isVerified,
-        if (createdAt != null)
-          'created_at': createdAt?.millisecondsSinceEpoch.toString(),
-        if (updatedAt != null)
-          'updated_at': updatedAt?.millisecondsSinceEpoch.toString(),
+        if (firstName != null) 'first_name': firstName,
+        if (lastName != null) 'last_name': lastName,
+        if (email != null) 'email': email,
+        if (isVerified != null) 'is_verified': isVerified,
+        if (createdAt != null) 'created_at': createdAt?.millisecondsSinceEpoch,
+        if (updatedAt != null) 'updated_at': updatedAt?.millisecondsSinceEpoch,
       };
 }

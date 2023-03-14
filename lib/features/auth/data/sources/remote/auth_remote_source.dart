@@ -23,12 +23,18 @@ abstract class IAuthRemoteSource {
   /// adds the user to the database if they don't exists,
   /// updates the users record in the database if they exists
   Future saveUser(UserModel user);
+
+  /// check if a user is currently verified
+  Future<bool> isVerified(String? userId);
 }
 
 class AuthRemoteSource implements IAuthRemoteSource {
-  AuthRemoteSource() : firebaseAuth = FirebaseAuth.instance;
+  AuthRemoteSource()
+      : firebaseAuth = FirebaseAuth.instance,
+        firestoreDB = FirebaseFirestore.instance;
 
   final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestoreDB;
 
   @override
   Future<String?> signInWithEmailAndPassword({
@@ -69,8 +75,6 @@ class AuthRemoteSource implements IAuthRemoteSource {
 
   @override
   Future saveUser(UserModel user) async {
-    final firestoreDB = FirebaseFirestore.instance;
-
     final collectionRef = firestoreDB.collection('users');
 
     if (user.id != null) {
@@ -87,7 +91,8 @@ class AuthRemoteSource implements IAuthRemoteSource {
       }
     } else {
       final email = user.email;
-      final snapshot = await collectionRef.where('email', isEqualTo: email).get();
+      final snapshot =
+          await collectionRef.where('email', isEqualTo: email).get();
 
       if (snapshot.docs.isNotEmpty) {
         final userId = snapshot.docs.first.data()['id'];
@@ -96,5 +101,24 @@ class AuthRemoteSource implements IAuthRemoteSource {
             );
       }
     }
+  }
+
+  @override
+  Future<bool> isVerified(String? userId) async {
+    final collectionRef = firestoreDB.collection('users');
+
+    if (userId != null) {
+      final document = await collectionRef.doc(userId).get();
+
+      if (document.exists) {
+        final user = UserModel.fromJson(
+          document.data() ?? {},
+        );
+
+        return user.isVerified ?? false;
+      }
+    }
+
+    return false;
   }
 }

@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:our_pass/core/constants/constants.dart';
+import 'package:our_pass/features/auth/auth.dart';
 import 'package:our_pass/features/shared/views/widgets/widgets.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -7,6 +9,8 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       backgroundColor: appColors.grey,
       appBar: const CustomHomeAppBar(),
@@ -24,9 +28,9 @@ class DashboardPage extends StatelessWidget {
                 height: 200,
               ),
               const YBox(20),
-              const Text(
-                'Welcome {{ USERNAME }}',
-                style: TextStyle(
+              Text(
+                'Welcome ${currentUser?.email}',
+                style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                 ),
@@ -48,7 +52,15 @@ class DashboardPage extends StatelessWidget {
               ),
               CustomTextButton(
                 title: 'Logout',
-                onPressed: () {},
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SignInPage()),
+                    (route) => false,
+                  );
+                },
               ),
             ],
           ),

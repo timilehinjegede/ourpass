@@ -13,6 +13,8 @@ class SigninLoading extends SigninState {}
 
 class SigninSuccess extends SigninState {}
 
+class VerifyAccount extends SigninState {}
+
 class SigninError extends SigninState {
   const SigninError(this.error);
 

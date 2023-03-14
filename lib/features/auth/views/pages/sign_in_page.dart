@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:our_pass/core/constants/constants.dart';
 import 'package:our_pass/core/utils/utils.dart';
+import 'package:our_pass/features/auth/auth.dart';
 import 'package:our_pass/features/auth/cubits/signin_cubit/signin_cubit.dart';
-import 'package:our_pass/features/auth/views/pages/sign_up_page.dart';
 import 'package:our_pass/features/shared/views/pages/dashboard_page.dart';
 import 'package:our_pass/features/shared/views/widgets/widgets.dart';
 
@@ -41,6 +41,26 @@ class SignInPage extends StatelessWidget {
           } else if (state is SigninLoading) {
             /// show a loading dialog while signing in the user
             context.showLoader(context);
+          } else if (state is VerifyAccount) {
+            /// pop the loading dialog
+            Navigator.of(context).pop();
+
+            /// navigate the user to the dasboard page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => VerifyAccountPage(
+                  emailStream: signInCubit.emailStream,
+                  ctaEnabledStream: signInCubit.validateVerification,
+                  onOtpChanged: (otp) {
+                    signInCubit.updateOtp(otp);
+                  },
+                  onVerify: () {
+                    signInCubit.verifyUser();
+                  },
+                ),
+              ),
+            );
           }
         },
         child: SingleChildScrollView(

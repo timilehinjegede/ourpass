@@ -38,7 +38,27 @@ class SignUpPage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const VerifyAccountPage(),
+                builder: (_) => VerifyAccountPage(
+                  emailStream: signUpCubit.emailStream,
+                  ctaEnabledStream: signUpCubit.validateVerification,
+                  onOtpChanged: (otp) {
+                    signUpCubit.updateOtp(otp);
+                  },
+                  onVerify: () {
+                    signUpCubit.verifyUser();
+                  },
+                ),
+              ),
+            );
+          } else if (state is AccountVerified) {
+            /// pop the loading dialog
+            Navigator.of(context).pop();
+
+            /// navigate the user to the dasboard page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const DashboardPage(),
               ),
             );
           }

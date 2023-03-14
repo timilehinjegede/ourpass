@@ -1,17 +1,21 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:our_pass/core/constants/constants.dart';
 import 'package:our_pass/features/auth/cubits/signin_cubit/signin_cubit.dart';
 import 'package:our_pass/features/auth/cubits/signup_cubit/signup_cubit.dart';
 import 'package:our_pass/features/auth/views/pages/sign_up_page.dart';
+import 'package:our_pass/features/shared/views/pages/pages.dart';
 
 class OurPassApp extends StatelessWidget {
   const OurPassApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => SigninCubit()),
@@ -21,7 +25,7 @@ class OurPassApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: appTheme,
         debugShowCheckedModeBanner: false,
-        home: const SignUpPage(),
+        home: currentUser != null ? const DashboardPage() : const SignUpPage(),
       ),
     );
   }
