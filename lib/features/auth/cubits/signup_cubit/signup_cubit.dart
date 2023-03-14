@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:our_pass/core/utils/exceptions.dart';
 import 'package:our_pass/core/utils/validators.dart';
+import 'package:our_pass/features/auth/data/models/user_model.dart';
 import 'package:our_pass/features/auth/data/repository/auth_repository.dart';
 import 'package:our_pass/features/auth/data/sources/remote/auth_remote_source.dart';
 import 'package:rxdart/rxdart.dart';
@@ -88,10 +90,14 @@ class SignupCubit extends Cubit<SignupState> {
     emit(SignupLoading());
 
     try {
-      await authRepository.signUpWithEmailAndPassword(
+      final userId = await authRepository.signUpWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      /// save the newly created account in the database
+
+      await saveUser(userId: userId);
 
       emit(AccountCreated());
     } on CustomException catch (e) {
@@ -99,15 +105,45 @@ class SignupCubit extends Cubit<SignupState> {
     }
   }
 
-  Future<void> verifyEmail() async {
+  Future<void> verifyUser() async {
+    emit(SignupLoading());
+
+    try {
+      /// save the newly created account in the database
+      await saveUser(
+        isVerified: true,
+      );
+
+      emit(AccountVerified());
+    } on CustomException catch (e) {
+      emit(SignupError(e.message));
+    }
+  }
+
+  Future<void> saveUser({
+    String? userId,
+    bool isVerified = false,
+  }) async {
+    final isCreating = userId != null;
+
     final email = _emailController.value.trim();
+    final firstName = _firstNameController.value.trim();
+    final lastName = _lastNameController.value.trim();
 
     emit(SignupLoading());
 
     try {
-      await authRepository.verifyEmail(email);
+      final user = UserModel(
+        id: userId,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        isVerified: isVerified,
+        createdAt: isCreating ? DateTime.now() : null,
+        updatedAt: isCreating ? null : DateTime.now(),
+      );
 
-      emit(AccountVerified());
+      await authRepository.saveUser(user);
     } on CustomException catch (e) {
       emit(SignupError(e.message));
     }

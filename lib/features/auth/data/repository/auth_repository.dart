@@ -1,17 +1,18 @@
+import 'package:our_pass/features/auth/data/models/user_model.dart';
 import 'package:our_pass/features/auth/data/sources/remote/auth_remote_source.dart';
 
 abstract class IAuthRepository {
-  Future signUpWithEmailAndPassword({
+  Future<String?> signUpWithEmailAndPassword({
     required String email,
     required String password,
   });
 
-  Future signInWithEmailAndPassword({
+  Future<String?> signInWithEmailAndPassword({
     required String email,
     required String password,
   });
 
-  Future verifyEmail(String email);
+  Future saveUser(UserModel user);
 }
 
 class AuthRepository implements IAuthRepository {
@@ -20,7 +21,7 @@ class AuthRepository implements IAuthRepository {
   final IAuthRemoteSource authRemoteSource;
 
   @override
-  Future signInWithEmailAndPassword({
+  Future<String?> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
@@ -31,7 +32,7 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future signUpWithEmailAndPassword({
+  Future<String?> signUpWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
@@ -42,7 +43,7 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future verifyEmail(String email) async {
-    return authRemoteSource.verifyEmail(email);
+  Future saveUser(UserModel user) async {
+    return authRemoteSource.saveUser(user);
   }
 }

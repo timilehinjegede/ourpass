@@ -41,17 +41,6 @@ class SignUpPage extends StatelessWidget {
                 builder: (_) => const VerifyAccountPage(),
               ),
             );
-          } else if (state is AccountVerified) {
-            /// pop the loading dialog
-            Navigator.of(context).pop();
-
-            /// navigate the user to the dasboard page
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const DashboardPage(),
-              ),
-            );
           }
         },
         child: SingleChildScrollView(

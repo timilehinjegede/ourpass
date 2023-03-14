@@ -1,23 +1,28 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:our_pass/core/utils/exceptions.dart';
+import 'package:our_pass/features/auth/data/models/models.dart';
 
 abstract class IAuthRemoteSource {
   /// signs up a user with their email and password
-  Future signUpWithEmailAndPassword({
+  /// returns the `uid` of the user who just signed up
+  Future<String?> signUpWithEmailAndPassword({
     required String email,
     required String password,
   });
 
   /// log in a user with their email and password
-  Future signInWithEmailAndPassword({
+  /// returns the `uid` of the signed in user
+  Future<String?> signInWithEmailAndPassword({
     required String email,
     required String password,
   });
 
-  /// verifys the users email
-  Future verifyEmail(String email);
+  /// adds the user to the database if they don't exists,
+  /// updates the users record in the database if they exists
+  Future saveUser(UserModel user);
 }
 
 class AuthRemoteSource implements IAuthRemoteSource {
@@ -26,8 +31,10 @@ class AuthRemoteSource implements IAuthRemoteSource {
   final FirebaseAuth firebaseAuth;
 
   @override
-  Future signInWithEmailAndPassword(
-      {required String email, required String password}) async {
+  Future<String?> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
     try {
       final userCredential = await firebaseAuth.signInWithEmailAndPassword(
         email: email,
@@ -35,13 +42,15 @@ class AuthRemoteSource implements IAuthRemoteSource {
       );
 
       log('user credentials is ${userCredential.toString()}');
+
+      return userCredential.user?.uid;
     } on Exception catch (e) {
       throw CustomException.getException(e);
     }
   }
 
   @override
-  Future signUpWithEmailAndPassword({
+  Future<String?> signUpWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
@@ -52,11 +61,40 @@ class AuthRemoteSource implements IAuthRemoteSource {
       );
 
       log('user credentials is ${userCredential.toString()}');
+      return userCredential.user?.uid;
     } on Exception catch (e) {
       throw CustomException.getException(e);
     }
   }
 
   @override
-  Future verifyEmail(String email) async {}
+  Future saveUser(UserModel user) async {
+    final firestoreDB = FirebaseFirestore.instance;
+
+    final collectionRef = firestoreDB.collection('users');
+
+    if (user.id != null) {
+      final document = await collectionRef.doc(user.id).get();
+
+      if (document.exists) {
+        await collectionRef.doc(user.id).update(
+              user.toJson(),
+            );
+      } else {
+        await collectionRef.doc(user.id).set(
+              user.toJson(),
+            );
+      }
+    } else {
+      final email = user.email;
+      final snapshot = await collectionRef.where('email', isEqualTo: email).get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final userId = snapshot.docs.first.data()['id'];
+        await collectionRef.doc(userId).update(
+              user.toJson(),
+            );
+      }
+    }
+  }
 }
