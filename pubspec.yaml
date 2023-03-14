@@ -42,6 +42,18 @@ dependencies:
   firebase_auth: ^4.2.10
   cloud_firestore: ^4.4.4
 
+  # displaying pin code fields
+  pin_code_fields: ^7.4.0
+
+  # state management
+  flutter_bloc: ^8.1.2
+
+  # object comparison
+  equatable: ^2.0.5
+
+  # advanced streams
+  rxdart: ^0.27.7
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

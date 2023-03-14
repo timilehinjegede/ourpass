@@ -9,7 +9,7 @@ const double padding = 15;
 const double hPadding = 20;
 const double vPadding = 20;
 
-const Duration kDuration = Duration(milliseconds: 500);
+const Duration kDuration = Duration(milliseconds: 300);
 const Curve kCurve = Curves.easeInOut;
 
 class Dims {
