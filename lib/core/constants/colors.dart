@@ -1,10 +1,11 @@
 // app colors
 import 'package:flutter/material.dart';
 
-const appColors = _DHColors(
+const appColors = _AppColors(
   yellow: Color(0xFFF3E42B),
   purple: Color(0xFF7A74F6),
   red: Color(0xFFB22A29),
+  green: Color.fromARGB(255, 10, 170, 47),
   lightRed: Color(0xFFFEECEA),
   grey: Color(0xFFF2F2F2),
   darkGrey: Color(0xFFA9A8A8),
@@ -14,11 +15,12 @@ const appColors = _DHColors(
 );
 
 // app colors model
-class _DHColors {
-  const _DHColors({
+class _AppColors {
+  const _AppColors({
     required this.yellow,
     required this.purple,
     required this.red,
+    required this.green,
     required this.lightRed,
     required this.grey,
     required this.darkGrey,
@@ -30,6 +32,7 @@ class _DHColors {
   final Color yellow;
   final Color purple;
   final Color red;
+  final Color green;
   final Color lightRed;
   final Color grey;
   final Color darkGrey;

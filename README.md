@@ -1,16 +1,27 @@
-# our_pass
+# OurPass Mobile Engineer Assessment
 
-A new Flutter project.
+## Features
+- [x] Sign In 
+- [x] Sign Up
+- [x] Email Verification
+- [x] View Dashboard
+- [x] Logout
 
-## Getting Started
+## Screenshots
 
-This project is a starting point for a Flutter application.
+| SignIn Screen | SignUp Screen | 
+|    :---:     |     :---:      |  
+| <img src="graphics/sign_up.png" width="500">   | <img src="graphics/sign_in.png" width="500">   |
 
-A few resources to get you started if this is your first Flutter project:
+| Verification Screen | Dashboard Screen | 
+|    :---:     |     :---:      |  
+| <img src="graphics/verification.png" width="500">   | <img src="graphics/dashboard.png" width="500">   |
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## Running Tests 
+
+To run all unit tests use the following command:
+
+```flutter test```
+

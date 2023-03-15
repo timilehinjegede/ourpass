@@ -6,6 +6,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
     Key? key,
+    required this.stream,
     required this.hintText,
     required this.labelText,
     this.controller,
@@ -20,6 +21,7 @@ class CustomTextField extends StatefulWidget {
     this.inputFormatters,
   }) : super(key: key);
 
+  final Stream<String> stream;
   final String hintText;
   final String labelText;
   final TextEditingController? controller;
@@ -48,48 +50,75 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: appColors.darkGrey.withOpacity(.3),
-        ),
-      ),
-      child: TextField(
-        controller: widget.controller,
-        onChanged: widget.onChanged,
-        cursorColor: appColors.purple,
-        keyboardType: widget.keyboardType,
-        textInputAction: widget.textInputAction,
-        obscureText: widget.isPassword ? !_isPasswordVisible : false,
-        obscuringCharacter: '●',
-        minLines: widget.lines,
-        maxLines: widget.lines,
-        inputFormatters: [
-          ...?widget.inputFormatters,
-        ],
-        style: TextStyle(
-          color: appColors.black,
-          fontWeight: FontWeight.w500,
-        ),
-        readOnly: widget.readOnly,
-        onTap: widget.onTap,
-        decoration: InputDecoration(
-          labelText: widget.labelText,
-          hintText: widget.hintText,
-          suffixIcon: widget.isPassword
-              ? IconButton(
-                  splashRadius: 25,
-                  icon: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                    color: appColors.darkGrey,
-                  ),
-                  onPressed: updatePasswordVisibility,
-                )
-              : widget.suffixIcon,
-        ),
-      ),
+    return StreamBuilder<String>(
+      stream: widget.stream,
+      builder: (context, snapshot) {
+        final hasError = snapshot.hasError;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AnimatedContainer(
+              duration: kDuration,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: hasError
+                      ? appColors.red
+                      : appColors.darkGrey.withOpacity(.3),
+                ),
+              ),
+              child: TextFormField(
+                controller: widget.controller,
+                onChanged: widget.onChanged,
+                cursorColor: appColors.purple,
+                keyboardType: widget.keyboardType,
+                textInputAction: widget.textInputAction,
+                obscureText: widget.isPassword ? !_isPasswordVisible : false,
+                obscuringCharacter: '●',
+                minLines: widget.lines,
+                maxLines: widget.lines,
+                inputFormatters: [
+                  ...?widget.inputFormatters,
+                ],
+                style: TextStyle(
+                  color: appColors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+                readOnly: widget.readOnly,
+                onTap: widget.onTap,
+                decoration: InputDecoration(
+                  labelText: widget.labelText,
+                  hintText: widget.hintText,
+                  suffixIcon: widget.isPassword
+                      ? IconButton(
+                          splashRadius: 25,
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: appColors.darkGrey,
+                          ),
+                          onPressed: updatePasswordVisibility,
+                        )
+                      : widget.suffixIcon,
+                ),
+              ),
+            ),
+
+            /// error text shown
+            if (hasError) const YBox(5),
+            if (hasError)
+              Text(
+                snapshot.error.toString(),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: appColors.red,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -99,10 +128,12 @@ class CustomPinCodeField extends StatelessWidget {
     super.key,
     this.length = 4,
     this.onCompleted,
+    this.onChanged,
   });
 
   final int length;
   final Function(String)? onCompleted;
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -116,13 +147,7 @@ class CustomPinCodeField extends StatelessWidget {
       animationDuration: const Duration(milliseconds: 300),
       onChanged: (value) {
         HapticFeedback.mediumImpact();
-      },
-      validator: (value) {
-        // if (value?.length != null && value!.length >= length) {
-        //   return null;
-        // }
-        // return 'Enter a valid code';
-        return null;
+        onChanged?.call(value);
       },
       onCompleted: onCompleted,
       textStyle: const TextStyle(
