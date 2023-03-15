@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:our_pass/core/constants/constants.dart';
 import 'package:our_pass/core/utils/utils.dart';
+import 'package:our_pass/features/auth/cubits/signin_cubit/signin_cubit.dart';
 import 'package:our_pass/features/auth/cubits/signup_cubit/signup_cubit.dart';
 import 'package:our_pass/features/auth/views/pages/pages.dart';
 import 'package:our_pass/features/shared/views/pages/pages.dart';
@@ -90,6 +91,9 @@ class SignUpPage extends StatelessWidget {
                       text: 'Sign in',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
+                          /// resets the sign in cubit [so its values are set to the initial state]
+                          context.read<SigninCubit>().reset();
+
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -149,7 +153,7 @@ class SignUpPage extends StatelessWidget {
               ),
               const YBox(30),
               CustomTextButton(
-                title: 'Get started',
+                title: 'Get Started',
                 enabledStream: signUpCubit.validateSignup,
                 buttonColor: appColors.yellow,
                 textColor: appColors.black,

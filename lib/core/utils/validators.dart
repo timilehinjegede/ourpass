@@ -11,6 +11,6 @@ class Validator {
   }
 
   bool isInputValid(String input) {
-    return input.trim().length > 3;
+    return input.trim().length >= 3;
   }
 }

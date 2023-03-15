@@ -1,13 +1,10 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:our_pass/app.dart';
+import 'package:our_pass/core/config.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await AppConfig.initialize();
 
-  Bloc.observer = AppBlocObserver();
   runApp(
     const OurPassApp(),
   );

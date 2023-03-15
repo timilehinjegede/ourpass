@@ -32,6 +32,7 @@ class SignupCubit extends Cubit<SignupState> {
   Stream<String> get passwordStream => _passwordController.stream;
   Stream<String> get otpStream => _otpController.stream;
 
+  /// validates and updates the first name textfield
   void updateFirstName(String firstName) {
     if (validator.isInputValid(firstName)) {
       _firstNameController.sink.add(firstName);
@@ -40,6 +41,7 @@ class SignupCubit extends Cubit<SignupState> {
     }
   }
 
+  /// validates and updates the last name field
   void updateLastName(String lastName) {
     if (validator.isInputValid(lastName)) {
       _lastNameController.sink.add(lastName);
@@ -48,6 +50,7 @@ class SignupCubit extends Cubit<SignupState> {
     }
   }
 
+  /// validates and updates the email field
   void updateEmail(String email) {
     if (validator.isEmailValid(email)) {
       _emailController.sink.add(email);
@@ -56,6 +59,7 @@ class SignupCubit extends Cubit<SignupState> {
     }
   }
 
+  /// validates and updates the password field
   void updatePassword(String password) {
     if (validator.isInputValid(password)) {
       _passwordController.sink.add(password);
@@ -64,24 +68,32 @@ class SignupCubit extends Cubit<SignupState> {
     }
   }
 
+  /// validates and updates the otp field used during verification
   void updateOtp(String otp) {
     _otpController.sink.add(otp);
   }
 
+  /// determines if the `Get Started` button  is enabled or not during sign up
   Stream<bool> get validateSignup => Rx.combineLatest4(
         firstNameStream,
         lastNameStream,
         emailStream,
         passwordStream,
         (a, b, c, d) {
-          return true;
+          /// the values of the form must not be empty and they must have passed individual validations
+          return a.isNotEmpty && b.isNotEmpty && c.isNotEmpty && d.isNotEmpty;
         },
       );
+
+  /// determines if the `Verify` button is enabled or not during verification
   Stream<bool> get validateVerification => Rx.combineLatest(
         [otpStream],
+
+        /// the length of the otp must be equals to 6 digits
         (a) => a.first.length == 6,
       );
 
+  /// signs up a user
   Future<void> signup() async {
     final email = _emailController.value.trim();
     final password = _passwordController.value.trim();
@@ -94,8 +106,7 @@ class SignupCubit extends Cubit<SignupState> {
         password: password,
       );
 
-      /// save the newly created account in the database
-
+      /// save the newly created records in the database
       await saveUser(userId: userId);
 
       emit(AccountCreated());
@@ -119,10 +130,13 @@ class SignupCubit extends Cubit<SignupState> {
     }
   }
 
+  /// takes in a `userId` and `isVerified` value when saving a user's records in the DB
   Future<void> saveUser({
     String? userId,
     bool isVerified = false,
   }) async {
+
+    /// the users record is a new user is the `userId` is not null
     final isCreating = userId != null;
 
     final email = _emailController.value.trim();
@@ -138,13 +152,25 @@ class SignupCubit extends Cubit<SignupState> {
         firstName: firstName,
         lastName: lastName,
         isVerified: isVerified,
+        /// set the `createdAt` field if it is a new user
         createdAt: isCreating ? DateTime.now() : null,
+        /// set the `updatedAt` field if it is an existing user
+        /// and an update to the users records is being performed
         updatedAt: isCreating ? null : DateTime.now(),
       );
 
+      /// saves the user records to the DB
       await authRepository.saveUser(user);
     } on CustomException catch (e) {
       emit(SignupError(e.message));
     }
+  }
+
+  /// reset the values of the cubit
+  void reset() {
+    _firstNameController.sink.add('');
+    _lastNameController.sink.add('');
+    _emailController.sink.add('');
+    _passwordController.sink.add('');
   }
 }

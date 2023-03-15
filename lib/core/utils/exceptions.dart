@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,14 +9,8 @@ class CustomException implements Exception {
 
   static CustomException getException(Exception e) {
     if (e is FirebaseAuthException) {
-      log('exception code is ${e.code}');
-      log('exception code is ${e.message}');
-
       final code = e.code;
       final message = FirebaseExceptionHandler.getMessage(code);
-
-      log('code is $code');
-      log('message is $message');
 
       return FirebaseException(message);
     }
@@ -96,6 +89,9 @@ class FirebaseExceptionHandler {
 
       case 'proceed-to-sign-in':
         return 'You have already created an account with this email, please sign in';
+
+      case 'network-request-failed':
+        return 'Please check your internet connection and try again.';
     }
 
     return 'Something went wrong';

@@ -5,6 +5,7 @@ import 'package:our_pass/core/constants/constants.dart';
 import 'package:our_pass/core/utils/utils.dart';
 import 'package:our_pass/features/auth/auth.dart';
 import 'package:our_pass/features/auth/cubits/signin_cubit/signin_cubit.dart';
+import 'package:our_pass/features/auth/cubits/signup_cubit/signup_cubit.dart';
 import 'package:our_pass/features/shared/views/pages/dashboard_page.dart';
 import 'package:our_pass/features/shared/views/widgets/widgets.dart';
 
@@ -108,8 +109,8 @@ class SignInPage extends StatelessWidget {
               ),
               const YBox(30),
               CustomTextButton(
-                enabledStream: signInCubit.validateForm,
-                title: 'Sign in',
+                enabledStream: signInCubit.validateSignin,
+                title: 'Sign In',
                 defaultEnabledValue: false,
                 onPressed: () {
                   signInCubit.signin();
@@ -130,6 +131,9 @@ class SignInPage extends StatelessWidget {
                         text: 'Sign up',
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
+                            /// resets the sign up cubit [so its values are set to the initial state]
+                            context.read<SignupCubit>().reset();
+
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

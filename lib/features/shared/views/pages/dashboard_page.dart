@@ -14,56 +14,66 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: appColors.grey,
       appBar: const CustomHomeAppBar(),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
           horizontal: hPadding,
           vertical: vPadding,
         ),
-        child: SizedBox.expand(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                icFlower,
-                height: 200,
-              ),
-              const YBox(20),
-              Text(
-                'Welcome ${currentUser?.email}',
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              icFlower,
+              height: 200,
+            ),
+            const YBox(20),
+            Text.rich(
+              TextSpan(
+                text: 'Welcome,\n',
+                children: [
+                  TextSpan(
+                    text: currentUser?.email ?? '',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
                 style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const YBox(20),
-              Text(
-                'Click here to logout\nof your account',
-                style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: appColors.darkGrey,
-                  letterSpacing: .7,
                 ),
-                textAlign: TextAlign.center,
               ),
-              Image.asset(
-                icArrow,
-                height: 200,
+              textAlign: TextAlign.center,
+            ),
+            const YBox(20),
+            Text(
+              'Click here to logout\nof your account',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: appColors.darkGrey,
+                letterSpacing: .7,
               ),
-              CustomTextButton(
-                title: 'Logout',
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  // ignore: use_build_context_synchronously
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SignInPage()),
-                    (route) => false,
-                  );
-                },
-              ),
-            ],
-          ),
+              textAlign: TextAlign.center,
+            ),
+            Image.asset(
+              icArrow,
+              height: 200,
+            ),
+            CustomTextButton(
+              title: 'Logout',
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                // ignore: use_build_context_synchronously
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SignInPage()),
+                  (route) => false,
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
